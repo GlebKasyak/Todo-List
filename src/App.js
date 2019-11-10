@@ -1,26 +1,76 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// import uuid from "uuid";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import axios from "axios";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { ToDo } from "./components/ToDo";
+import Header from "./components/Header"
+import { AddTodo } from "./components/ToDo/AddTodo";
+import About from "./components/Pages/About";
+import { HOME_PAGE, ABOUT_PAGE, URL } from "./constants/const";
+
+class  App extends React.Component {
+  state = {
+    todos: []
+  };
+
+  componentDidMount() {
+    axios.get(URL + "?_limit=8")
+        .then(res => this.setState({todos: res.data}))
+  };
+
+  markComplete = ( id ) => {
+    this.setState({todos: this.state.todos.map(todo => {
+      if(todo.id === id) {
+        todo.completed = !todo.completed
+      }
+
+      return todo
+      }) })
+  };
+
+  addTodo = ( title ) => {
+    axios.post( URL,{
+      title,
+      completed: false
+    })
+        .then(res =>
+            this.setState({todos: [...this.state.todos, res.data]})
+        )
+  };
+
+  delTodo = ( id ) => {
+    axios.delete(URL + `/${id}`)
+        .then(res =>
+            this.setState({todos: [...this.state.todos.filter( todo =>
+              todo.id !== id )]})
+        )
+
+
+  };
+
+  render() {
+    return (
+        <Router>
+          <div className="App">
+            <div className="dontainer">
+              <Header />
+              <Route exact path={ HOME_PAGE } render={props => (
+                  <>
+                    <AddTodo addTodo={ this.addTodo }/>
+                    <ToDo
+                        todos={ this.state.todos }
+                        markComplete={ this.markComplete }
+                        delTodo={ this.delTodo }
+                    />
+                  </>
+              )} />
+              <Route path={ ABOUT_PAGE } component={ About }/>
+            </div>
+          </div>
+        </Router>
+    );
+  }
 }
 
 export default App;

@@ -1,0 +1,24 @@
+
+form {
+    display: flex;
+}
+
+form .add-todo {
+    flex: 10;
+    padding: 5px 20px!important;
+}
+
+form  .btn {
+    flex: 1;
+    display: inline-block;
+    background: #555;
+    border: none;
+    padding: 7px 20px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    height: auto;
+}
+
+form .btn:hover {
+    background-color: #666;
+}
